@@ -1,0 +1,10 @@
+.idea/workspace.xml
+.idea/tasks.xml
+classes/
+*.class
+dcpu-debugger.jar
+.DS_Store
+
+# Package Files #
+*.war
+*.ear
