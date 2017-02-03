@@ -45,6 +45,7 @@ public class DCPU
     public final VirtualFloppyDrive[] floppy = { new VirtualFloppyDrive(), new VirtualFloppyDrive()};
     public final VirtualHic hic = new VirtualHic();
     public final VirtualRci rci = new VirtualRci();
+    public final VirtualSpeaker speaker = new VirtualSpeaker();
 
     public boolean isSkipping = false;
     public boolean isOnFire = false;
@@ -837,6 +838,7 @@ public class DCPU
         floppy[1].connectTo(this);
         hic.connectTo(this);
         rci.connectTo(this);
+        speaker.connectTo(this);
 
         if(floppyFile[0] != null) {
             InputStream is = new FileInputStream(floppyFile[0]);
