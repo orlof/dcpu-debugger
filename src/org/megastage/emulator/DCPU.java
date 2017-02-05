@@ -42,6 +42,7 @@ public class DCPU
     public final VirtualClockV2 clock = new VirtualClockV2();
     public final VirtualClock clockv1 = new VirtualClock();
     public final VirtualKeyboard kbd = new VirtualKeyboard();
+    public final VirtualAsciiKeyboard asciiKbd = new VirtualAsciiKeyboard();
     public final VirtualFloppyDrive[] floppy = { new VirtualFloppyDrive(), new VirtualFloppyDrive()};
     public final VirtualHic hic = new VirtualHic();
     public final VirtualRci rci = new VirtualRci();
@@ -833,7 +834,8 @@ public class DCPU
 
         clock.connectTo(this);
         //clockv1.connectTo(this);
-        kbd.connectTo(this);
+        //kbd.connectTo(this);
+        asciiKbd.connectTo(this);
         floppy[0].connectTo(this);
         floppy[1].connectTo(this);
         hic.connectTo(this);
@@ -858,9 +860,15 @@ public class DCPU
                     System.exit(0);
                 }
                 if (e.getID() == KeyEvent.KEY_PRESSED) {
-                    kbd.keyPressed(e.getKeyCode(), e.getKeyChar());
+                    if(kbd.isConnected())
+                        kbd.keyPressed(e.getKeyCode(), e.getKeyChar());
+                    if(asciiKbd.isConnected())
+                        asciiKbd.keyPressed(e.getKeyCode(), e.getKeyChar());
                 } else if (e.getID() == KeyEvent.KEY_RELEASED) {
-                    kbd.keyReleased(e.getKeyCode(), e.getKeyChar());
+                    if(kbd.isConnected())
+                        kbd.keyReleased(e.getKeyCode(), e.getKeyChar());
+                    if(asciiKbd.isConnected())
+                        asciiKbd.keyReleased(e.getKeyCode(), e.getKeyChar());
                 } else if (e.getID() == KeyEvent.KEY_TYPED) {
                     // kbd.keyTyped(e.getKeyCode(), e.getKeyChar());
                 }

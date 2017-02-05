@@ -15,7 +15,8 @@ public class VirtualMonitor extends DCPUHardware
     private int borderColor = 0;
 
     public VirtualMonitor() {
-        super(0x7349f615, 0x1802, 0x1c6c8b36);
+//        super(0x7349f615, 0x1802, 0x1c6c8b36);
+        super(0x734df615, 0x1802, 0x1c6c8b36);
     }
 
     private void resetFont() {

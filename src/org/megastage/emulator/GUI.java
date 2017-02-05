@@ -262,7 +262,7 @@ public class GUI {
 
     private JPanel createControlPanel() {
         JPanel controlButtonPanel = new JPanel();
-        //controlButtonPanel.setLayout(new GridLayout(1, 4));
+        controlButtonPanel.setLayout(new GridLayout(2, 5));
         controlButtonPanel.add(createJButton("Step", e -> {
             if (!dcpu.running) {
                 dcpu.tickle();

@@ -62,8 +62,8 @@ public class SynthChip extends Thread {
             System.exit(-1);
         }
 
-        System.out.println("Requested line buffer size = " + SINE_PACKET_SIZE*2);
-        System.out.println("Actual line buffer size = " + line.getBufferSize());
+        // System.out.println("Requested line buffer size = " + SINE_PACKET_SIZE*2);
+        // System.out.println("Actual line buffer size = " + line.getBufferSize());
 
 
         ByteBuffer cBuf = ByteBuffer.allocate(SINE_PACKET_SIZE);
@@ -122,8 +122,6 @@ public class SynthChip extends Thread {
                 }
 
                 freq = targetFreq;
-                System.out.println("SynthChip.run");
-                System.out.println("freq = " + freq);
 
                 if(freq == 0) {
                     for (int i = 0; i < iLoop; i++) {
@@ -171,8 +169,6 @@ public class SynthChip extends Thread {
     }
 
     public void setFrequency(double freq) {
-        System.out.println("SynthChip.setFrequency");
-        System.out.println("freq = " + freq);
         targetFreq = freq;
     }
 }
