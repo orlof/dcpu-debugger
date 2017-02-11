@@ -876,7 +876,8 @@ public class DCPU
             return false;
         });
 
-        final VirtualMonitor mon = new VirtualMonitor();
+        // final VirtualMonitor mon = new VirtualMonitor();
+        final VirtualMonitor mon = new VirtualPixie();
         mon.connectTo(this);
 
         view = new LEM1802Viewer();

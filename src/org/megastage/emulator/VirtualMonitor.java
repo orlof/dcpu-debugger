@@ -6,17 +6,21 @@ import javax.imageio.ImageIO;
 
 public class VirtualMonitor extends DCPUHardware
 {
-    private int[] palette = new int[16];
-    private char[] font = new char[256];
-    public int[] pixels = new int[12289];
-    private int screenMemMap;
-    private int fontMemMap;
-    private int paletteMemMap;
-    private int borderColor = 0;
+    protected int[] palette = new int[16];
+    protected char[] font = new char[256];
+    protected int[] pixels = new int[12289];
+    protected int videoRam;
+    protected int fontRam;
+    protected int paletteRam;
+    protected int borderColor = 0;
 
     public VirtualMonitor() {
 //        super(0x7349f615, 0x1802, 0x1c6c8b36);
         super(0x734df615, 0x1802, 0x1c6c8b36);
+    }
+
+    protected VirtualMonitor(int type, int ver, int manufacturer) {
+        super(type, ver, manufacturer);
     }
 
     private void resetFont() {
@@ -41,7 +45,7 @@ public class VirtualMonitor extends DCPUHardware
         }
     }
 
-    private void resetPalette() {
+    protected void resetPalette() {
         for (int i = 0; i < 16; i++) {
             int b = (i >> 0 & 0x1) * 170;
             int g = (i >> 1 & 0x1) * 170;
@@ -63,7 +67,7 @@ public class VirtualMonitor extends DCPUHardware
         }
     }
 
-    private void loadPalette(char[] ram, int offset) {
+    protected void loadPalette(char[] ram, int offset) {
         for (int i = 0; i < 16; i++) {
             char ch = ram[(offset + i)];
             int b = (ch >> '\000' & 0xF) * 17;
@@ -76,11 +80,11 @@ public class VirtualMonitor extends DCPUHardware
     public void interrupt() {
         int a = dcpu.registers[0];
         if (a == 0) {
-            screenMemMap = dcpu.registers[1];
+            videoRam = dcpu.registers[1];
         } else if (a == 1) {
-            fontMemMap = dcpu.registers[1];
+            fontRam = dcpu.registers[1];
         } else if (a == 2) {
-            paletteMemMap = dcpu.registers[1];
+            paletteRam = dcpu.registers[1];
         } else if (a == 3) {
             borderColor = (dcpu.registers[1] & 0xF);
         } else if (a == 4) {
@@ -114,7 +118,7 @@ public class VirtualMonitor extends DCPUHardware
         try {
             synchronized (this) {
                 if (pixels != null) {
-                    if (screenMemMap == 0) {
+                    if (videoRam == 0) {
 
                         for (int y = 0; y < 96; y++) {
                             for (int x = 0; x < 128; x++) {
@@ -128,19 +132,19 @@ public class VirtualMonitor extends DCPUHardware
 
                         char[] fontRam = font;
                         int charOffset = 0;
-                        if (fontMemMap > 0) {
+                        if (this.fontRam > 0) {
                             fontRam = dcpu.ram;
-                            charOffset = fontMemMap;
+                            charOffset = this.fontRam;
                         }
-                        if (paletteMemMap == 0)
+                        if (paletteRam == 0)
                             resetPalette();
                         else {
-                            loadPalette(dcpu.ram, paletteMemMap);
+                            loadPalette(dcpu.ram, paletteRam);
                         }
 
                         for (int y = 0; y < 12; y++) {
                             for (int x = 0; x < 32; x++) {
-                                char dat = dcpu.ram[screenMemMap + x + y * 32 & 0xFFFF];
+                                char dat = dcpu.ram[videoRam + x + y * 32 & 0xFFFF];
                                 int ch = dat & 0x7F;
                                 int colorIndex = dat >> '\b' & 0xFF;
                                 int co = charOffset + ch * 2;
@@ -180,9 +184,9 @@ public class VirtualMonitor extends DCPUHardware
 
     @Override
     public void powerOff() {
-        screenMemMap = 0;
-        fontMemMap = 0;
-        paletteMemMap = 0;
+        videoRam = 0;
+        fontRam = 0;
+        paletteRam = 0;
         borderColor = 0;
         resetPalette();
         resetFont();
