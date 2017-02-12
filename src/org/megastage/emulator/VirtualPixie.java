@@ -32,40 +32,52 @@ public class VirtualPixie extends VirtualMonitor {
                             loadPalette(dcpu.ram, paletteRam);
                         }
 
-                        for(int idx = 0, addr = videoRam; addr < videoRam + BITPLANE_SIZE; addr++) {
+                        for(int idx = 0, addr = 0; addr < BITPLANE_SIZE; addr++) {
                             // one byte from each bitplane is copied to integer
-                            int x = dcpu.ram[videoRam + (addr & 0x1ffff)];
+                            long x = dcpu.ram[(videoRam + addr) & 0xffff];
                             int mask = 0x1;
                             if(screenMode > 1) {
-                                x |= dcpu.ram[videoRam + (addr + BITPLANE_SIZE & 0x1ffff)] << 8;
+                                x |= ((long) dcpu.ram[(videoRam + addr + BITPLANE_SIZE) & 0xffff]) << 16;
                                 mask = 0x3;
                                 if(screenMode > 2) {
-                                    x |= dcpu.ram[videoRam + (addr + 2 * BITPLANE_SIZE & 0x1ffff)] << 16;
+                                    x |= ((long) dcpu.ram[(videoRam + addr + 2 * BITPLANE_SIZE) & 0xffff]) << 32;
                                     mask = 0x7;
                                     if(screenMode > 3) {
-                                        x |= dcpu.ram[videoRam + (addr + 3 * BITPLANE_SIZE & 0x1ffff)] << 24;
+                                        x |= ((long) dcpu.ram[(videoRam + addr + 3 * BITPLANE_SIZE) & 0xffff]) << 48;
                                         mask = 0xf;
                                     }
                                 }
                             }
 
-                            // bits from 4 bytes are shuffled to 8 nibbles
-                            x = (x & 0x00f000f0) << 4 | ((x >> 4) & 0x00f000f0) | (x & 0xf00ff00f);
-                            x = (x & 0x0000ff00) << 8 | ((x >> 8) & 0x0000ff00) | (x & 0xff0000ff);
-                            x = (x & 0x0c0c0c0c) << 2 | ((x >> 2) & 0x0c0c0c0c) | (x & 0xc3c3c3c3);
-                            x = (x & 0x00f000f0) << 4 | ((x >> 4) & 0x00f000f0) | (x & 0xf00ff00f);
-                            x = (x & 0x22222222) << 1 | ((x >> 1) & 0x22222222) | (x & 0x99999999);
-                            x = (x & 0x0c0c0c0c) << 2 | ((x >> 2) & 0x0c0c0c0c) | (x & 0xc3c3c3c3);
+                            // bits from 4 words are shuffled to 16 nibbles
+                            x = (x & 0x0000ff000000ff00L) << 8 | ((x >> 8) & 0x0000ff000000ff00L) | (x & 0xff0000ffff0000ffL);
+                            x = (x & 0x00000000ffff0000L) << 16 | ((x >> 16) & 0x00000000ffff0000L) | (x & 0xffff00000000ffffL);
+
+                            x = (x & 0x00f000f000f000f0L) << 4 | ((x >> 4) & 0x00f000f000f000f0L) | (x & 0xf00ff00ff00ff00fL);
+                            x = (x & 0x0000ff000000ff00L) << 8 | ((x >> 8) & 0x0000ff000000ff00L) | (x & 0xff0000ffff0000ffL);
+                            x = (x & 0x0c0c0c0c0c0c0c0cL) << 2 | ((x >> 2) & 0x0c0c0c0c0c0c0c0cL) | (x & 0xc3c3c3c3c3c3c3c3L);
+                            x = (x & 0x00f000f000f000f0L) << 4 | ((x >> 4) & 0x00f000f000f000f0L) | (x & 0xf00ff00ff00ff00fL);
+                            x = (x & 0x2222222222222222L) << 1 | ((x >> 1) & 0x2222222222222222L) | (x & 0x9999999999999999L);
+                            x = (x & 0x0c0c0c0c0c0c0c0cL) << 2 | ((x >> 2) & 0x0c0c0c0c0c0c0c0cL) | (x & 0xc3c3c3c3c3c3c3c3L);
 
                             // output rgb values
-                            pixels[idx++] = palette[x >> 28 & mask];
-                            pixels[idx++] = palette[x >> 24 & mask];
-                            pixels[idx++] = palette[x >> 20 & mask];
-                            pixels[idx++] = palette[x >> 16 & mask];
-                            pixels[idx++] = palette[x >> 12 & mask];
-                            pixels[idx++] = palette[x >> 8 & mask];
-                            pixels[idx++] = palette[x >> 4 & mask];
-                            pixels[idx++] = palette[x >> 0 & mask];
+                            pixels[idx++] = palette[(int) (x >> 60 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 56 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 52 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 48 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 44 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 40 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 36 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 32 & mask)];
+
+                            pixels[idx++] = palette[(int) (x >> 28 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 24 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 20 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 16 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 12 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 8 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 4 & mask)];
+                            pixels[idx++] = palette[(int) (x >> 0 & mask)];
                         }
 
                         int color = palette[borderColor];
