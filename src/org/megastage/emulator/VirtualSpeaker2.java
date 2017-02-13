@@ -9,7 +9,7 @@ import javax.sound.sampled.*;
 import java.io.ByteArrayInputStream;
 
 
-public class VirtualSpeaker extends DCPUHardware {
+public class VirtualSpeaker2 extends DCPUHardware {
     public static final int TYPE = 0xC0F00001, REVISION = 0x0001, MANUFACTURER = 0x5672746B;
 
 	public static final float SAMPLE_RATE = 11025;
@@ -21,9 +21,8 @@ public class VirtualSpeaker extends DCPUHardware {
 	private SquareOscillator squareOscillator1 = new SquareOscillator();
 	private LineOut lineOut = new LineOut();
 
-    public VirtualSpeaker() {
+    public VirtualSpeaker2() {
         super(TYPE, REVISION, MANUFACTURER);
-		this.id = id;
 
 		synth = JSyn.createSynthesizer();
 		synth.add(lineOut);
