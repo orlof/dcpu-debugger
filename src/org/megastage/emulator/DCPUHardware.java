@@ -9,9 +9,9 @@ public abstract class DCPUHardware {
     public static final int MANUFACTORER_NYA_ELEKTRISKA = 0x1C6C8B36;
     public static final int MANUFACTORER_MOJANG = 0x4AB55488;
     public static final int MANUFACTORER_MACKAPAR = 0x1EB37E91;
-    private final int type;
-    private final int revision;
-    private final int manufactorer;
+    public int type;
+    public int revision;
+    public int manufactorer;
     public DCPU dcpu;
 
     public DCPUHardware(int type, int revision, int manufactorer) {

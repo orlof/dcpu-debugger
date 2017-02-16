@@ -5,7 +5,10 @@ public class VirtualPixie extends VirtualMonitor {
     private int screenMode = 0;
 
     public VirtualPixie() {
-        super(0x734df615, 0x1802, 0x1c6c8b36);
+        // These are the correct values
+        super(0x774df615, 0x1802, 0x83610EC5);
+        // These are LEM values - for compatibility testing
+        // super(0x734df615, 0x1802, 0x1c6c8b36);
     }
 
     public void interrupt() {
@@ -61,23 +64,9 @@ public class VirtualPixie extends VirtualMonitor {
                             x = (x & 0x0c0c0c0c0c0c0c0cL) << 2 | ((x >> 2) & 0x0c0c0c0c0c0c0c0cL) | (x & 0xc3c3c3c3c3c3c3c3L);
 
                             // output rgb values
-                            pixels[idx++] = palette[(int) (x >> 60 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 56 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 52 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 48 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 44 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 40 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 36 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 32 & mask)];
-
-                            pixels[idx++] = palette[(int) (x >> 28 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 24 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 20 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 16 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 12 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 8 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 4 & mask)];
-                            pixels[idx++] = palette[(int) (x >> 0 & mask)];
+                            for(int shift = 60; shift >= 0; shift -= 4) {
+                                pixels[idx++] = palette[(int) (x >> shift & mask)];
+                            }
                         }
 
                         int color = palette[borderColor];

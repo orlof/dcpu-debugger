@@ -24,6 +24,9 @@ public class VirtualSpeaker2 extends DCPUHardware {
     public VirtualSpeaker2() {
         super(TYPE, REVISION, MANUFACTURER);
 
+		squareOscillator0.amplitude.set(0);
+		squareOscillator1.amplitude.set(0);
+
 		synth = JSyn.createSynthesizer();
 		synth.add(lineOut);
 		synth.add(squareOscillator0);

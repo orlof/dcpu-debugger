@@ -24,6 +24,7 @@ public class GUI {
 //    private JTable editorTable;
     private JTable registerTable;
 
+    private JButton pixieButton;
     private JToggleButton runButton;
     private JToggleButton turboButton;
     private JToggleButton traceButton;
@@ -80,9 +81,10 @@ public class GUI {
     }
 
     private Component createFloppiesPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(createFloppyPanel(0), BorderLayout.PAGE_START);
-        p.add(createFloppyPanel(1), BorderLayout.PAGE_END);
+        JPanel p = new JPanel(new GridLayout(0, 1));
+        p.add(createFloppyPanel(0));
+        p.add(createFloppyPanel(1));
+        p.add(createPixiePanel());
         return p;
     }
 
@@ -93,6 +95,39 @@ public class GUI {
             String filename = dcpu.floppyFile[unit].getName();
             floppyLabel[unit].setText(filename);
         }
+    }
+
+    private Component createPixiePanel() {
+        JPanel p = new JPanel(new FlowLayout());
+
+        pixieButton = new JButton("LEM");
+        for(DCPUHardware hw: dcpu.getHardware()) {
+            if(hw.type == 0x774df615) {
+                pixieButton.setText("PIXIE");
+            }
+        }
+        pixieButton.addActionListener(e -> {
+            if(pixieButton.getText().equals("LEM")) {
+                pixieButton.setText("PIXIE");
+                for(DCPUHardware hw: dcpu.getHardware()) {
+                    if(hw.type == 0x734df615) {
+                        hw.type = 0x774df615;
+                        hw.manufactorer = 0x83610EC5;
+                    }
+                }
+            } else {
+                pixieButton.setText("LEM");
+                for(DCPUHardware hw: dcpu.getHardware()) {
+                    if(hw.type == 0x774df615) {
+                        hw.type = 0x734df615;
+                        hw.manufactorer = 0x1c6c8b36;
+                    }
+                }
+            }
+        });
+
+        p.add(pixieButton);
+        return p;
     }
 
     private Component createFloppyPanel(int unit) {

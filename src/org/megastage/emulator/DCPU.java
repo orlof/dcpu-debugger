@@ -46,7 +46,7 @@ public class DCPU
     public final VirtualFloppyDrive[] floppy = { new VirtualFloppyDrive(), new VirtualFloppyDrive()};
     public final VirtualHic hic = new VirtualHic();
     public final VirtualRci rci = new VirtualRci();
-    public final VirtualSpeaker speaker = new VirtualSpeaker();
+    public final VirtualSpeaker2 speaker = new VirtualSpeaker2();
 
     public boolean isSkipping = false;
     public boolean isOnFire = false;
@@ -59,6 +59,7 @@ public class DCPU
     public File traceFile = new File(System.getProperty("user.dir"), "dcpu-trace.log");
     private DisasmAddr lineDisassembler;
     public PrintWriter out;
+    private boolean hltMode;
 
     public int getAddrB(int type) {
         switch (type & 0xF8) {
@@ -279,6 +280,8 @@ public class DCPU
 
         cycles++;
 
+        if(hltMode) return;
+
         char opcode = ram[pc++];
 
         int cmd = opcode & 0x1F;
@@ -358,14 +361,15 @@ public class DCPU
                             }
                         }
                         break;
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 13:
-                    case 14:
-                    case 15:
+                    case 19: //LOG
+                        System.out.println(startPC + " LOG " + hex(a) + "  " + cycles);
+                        break;
+                    case 20: //BRK
+                        running = false;
+                        break;
+                    case 21: //HLT
+                        hltMode = true;
+                        break;
                     default:
                         break;
                 }
@@ -637,16 +641,17 @@ public class DCPU
                     while (cycles < cyclesFrameEnd) {
                         tick();
 
-                        if(stepOverPc == pc) {
+                        if (stepOverPc == pc) {
                             stepOverPc = -1;
                             running = false;
                             break;
                         }
-                        if(breakPoints[pc] && !isSkipping) {
+                        if (breakPoints[pc] && !isSkipping) {
                             running = false;
                             break;
                         }
                     }
+
                     tickHardware();
                     if(cycles > lastShownCycles + 10000) {
                         registerTableModel.fireTableChanged(new TableModelEvent(registerTableModel, 11));
